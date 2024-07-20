@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="2" failures="0" errors="0" time="20.043353">
+	<testsuite tests="2" failures="0" time="13.205000" name="github.com/rancher/rancher/tests/v2/validation/provisioning/rke2" timestamp="2024-07-01T16:19:50-07:00">
+		<properties>
+			<property name="go.version" value="go1.22.3 darwin/arm64"></property>
+		</properties>
+		<testcase classname="github.com/rancher/rancher/tests/v2/validation/provisioning/rke2" name="TestSandboxTestSuite/TestSandbox" time="0.000000"></testcase>
+		<testcase classname="github.com/rancher/rancher/tests/v2/validation/provisioning/rke2" name="TestSandboxTestSuite" time="12.090000"></testcase>
+	</testsuite>
+</testsuites>
