@@ -8,6 +8,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/rancher/rancher/tests/v2/validation/provisioning/constants"
 	"github.com/rancher/shepherd/clients/rancher"
 	v1 "github.com/rancher/shepherd/clients/rancher/v1"
 	"github.com/rancher/shepherd/extensions/clusters"
@@ -19,8 +20,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
-
-const ConfigEnvironmentKey = "CATTLE_TEST_CONFIG"
 
 type Sandbox struct {
 	suite.Suite
@@ -42,15 +41,8 @@ func (k *Sandbox) SetupSuite() {
 	require.NoError(k.T(), err)
 	k.client = client
 
-	config, _ := permutation.LoadConfigFromFile(os.Getenv(ConfigEnvironmentKey))
+	config, _ := permutation.LoadConfigFromFile(os.Getenv(constants.ConfigEnvironmentKey))
 	logrus.Info(config)
-
-	/*
-		testPermutation0 := permutation.Permutation{
-			KeyPath:                   []string{"awsMachineConfigs", "awsMachineConfig", "ami"},
-			KeyPathValues:             []any{"ami-12345", "ami-678910"},
-			KeyPathValueRelationships: []permutation.Relationship{awsRelationship0},
-		}*/
 
 	k8sVersions, err := kubernetesversions.ListRKE2AllVersions(k.client)
 	require.NoError(k.T(), err)
@@ -62,13 +54,14 @@ func (k *Sandbox) SetupSuite() {
 	testPermutation1 := permutation.Permutation{
 		KeyPath:                   []string{"provisioningInput", "kubernetesVersion"},
 		KeyPathValues:             []any{k8sVersions[0], k8sVersions[1], k8sVersions[2]},
-		KeyPathValueRelationships: []permutation.Relationship{awsRelationship0, awsRelationship1},
+		KeyPathValueRelationships: []permutation.Relationship{},
 	}
 
 	permutedConfigs, permutationNames, err := permutation.Permute([]permutation.Permutation{testPermutation1}, config)
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	/*
 		for _, permutedConfig := range permutedConfigs {
 			logrus.Info("---------------------------------------------")
@@ -81,7 +74,7 @@ func (k *Sandbox) SetupSuite() {
 	logrus.Infof("Configs: %v", len(permutedConfigs))
 	logrus.Info("---------------------------------------------")
 
-	k.T().Run(name, func() { 
+	k.T().Run(name, func() {
 		clusterObjects := []v1.SteveAPIObject
 		for _, permutedConfig := range permutedConfigs {
 			logrus.Info("---------------------------------------------")
@@ -91,21 +84,21 @@ func (k *Sandbox) SetupSuite() {
 			indented, _ := json.MarshalIndent(k.provisioningConfig, "", "    ")
 			converted := string(indented)
 			fmt.Println(converted)
-	
+
 			logrus.Info("Provisioning Clusters")
 			providers := *k.provisioningConfig.Providers
 			provider := provider[0]
 			nodeProvider := provisioning.CreateProvider(provider)
 			clusterObject, err := provisioning.CreateProvisioningCluster(k.client, nodeProvider, k.provisioningConfig, nil)
 			require.NoError(s.T(), err)
-	
+
 			clusterObjects = append(clusterObjects, clusterObject)
 		}
-	
+
 		for _, clusterObject := range clusterObjects {
 			provisioning.VerifyCluster(s.T(), client, testClusterConfig, clusterObject)
 		}
-	}
+	})
 }
 
 func (k *Sandbox) TestSandbox() {
