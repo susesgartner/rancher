@@ -3,7 +3,6 @@
 package rke2
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"testing"
@@ -47,10 +46,6 @@ func (k *Sandbox) SetupSuite() {
 	k8sVersions, err := kubernetesversions.ListRKE2AllVersions(k.client)
 	require.NoError(k.T(), err)
 
-	logrus.Info("--------------------------------------")
-	logrus.Info("K8S VERSIONS:")
-	logrus.Info(k8sVersions)
-	logrus.Info("--------------------------------------")
 	testPermutation1 := permutation.Permutation{
 		KeyPath:                   []string{"provisioningInput", "kubernetesVersion"},
 		KeyPathValues:             []any{k8sVersions[0], k8sVersions[1], k8sVersions[2]},
@@ -77,13 +72,8 @@ func (k *Sandbox) SetupSuite() {
 	k.T().Run(name, func() {
 		clusterObjects := []v1.SteveAPIObject
 		for _, permutedConfig := range permutedConfigs {
-			logrus.Info("---------------------------------------------")
-			logrus.Info("CONVERTED TO CLUSTERCONFIG")
 			k.provisioningConfig = new(clusters.ClusterConfig)
-			permutation.LoadConfigFromMap("provisioningInput", permutedConfig, k.provisioningConfig)
-			indented, _ := json.MarshalIndent(k.provisioningConfig, "", "    ")
-			converted := string(indented)
-			fmt.Println(converted)
+			permutation.LoadConfigFromMap("clusterConfig", permutedConfig, k.provisioningConfig)
 
 			logrus.Info("Provisioning Clusters")
 			providers := *k.provisioningConfig.Providers
