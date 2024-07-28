@@ -1,4 +1,4 @@
-package clusterconfig
+package permutationdata
 
 const (
 	ClusterConfigKey = "clusterConfig"

@@ -1,9 +1,8 @@
-package providers
+package permutationdata
 
 import (
 	"fmt"
 
-	"github.com/rancher/rancher/tests/v2/validation/provisioning/provisioningconfig/clusterconfig"
 	"github.com/rancher/shepherd/extensions/permutation"
 )
 
@@ -18,7 +17,7 @@ const (
 )
 
 func LoadProviderRelationships(testConfig map[string]any) []permutation.Relationship {
-	providers := testConfig[clusterconfig.ClusterConfigKey].(map[string]any)[clusterconfig.ProviderKey].(*[]string)
+	providers := testConfig[ClusterConfigKey].(map[string]any)[ProviderKey].(*[]string)
 
 	var providerRelationships []permutation.Relationship
 	for _, provider := range *providers {

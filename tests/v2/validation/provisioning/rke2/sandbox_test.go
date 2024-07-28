@@ -15,6 +15,7 @@ import (
 	"github.com/rancher/shepherd/extensions/provisioning"
 	"github.com/rancher/shepherd/pkg/config"
 	namegen "github.com/rancher/shepherd/pkg/namegenerator"
+	"github.com/rancher/rancher/tests/v2/validation/provisioning/permutations/permutationdata"
 	"github.com/rancher/shepherd/pkg/session"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
@@ -24,6 +25,7 @@ import (
 const (
 	provisioningInputKey = "clusterConfig"
 	k8sVersionKey        = "kubernetesVersion"
+	awsMachineKey = "awsMachineConfigs"
 )
 
 type Sandbox struct {
@@ -48,23 +50,36 @@ func (k *Sandbox) SetupSuite() {
 
 	config, _ := config.LoadConfigFromFile(os.Getenv(constants.ConfigEnvironmentKey))
 	logrus.Info(config)
-
+/*
 	k8sVersions, err := kubernetesversions.ListRKE2AllVersions(k.client)
-	require.NoError(k.T(), err)
+	require.NoError(k.T(), err)*/
 
-	testPermutation1 := permutation.Permutation{
+	k8sPermutation := permutation.Permutation{
 		KeyPath:                   []string{provisioningInputKey, k8sVersionKey},
-		KeyPathValues:             []any{config[provisioningInputKey][k8sVersionKey]...},
+		KeyPathValues:             []any{config[provisioningInputKey].(map[string]any)[k8sVersionKey]...},
 		KeyPathValueRelationships: []permutation.Relationship{},
 	}
 
-	testPermutation1 := permutation.Permutation{
-		KeyPath:                   []string{},
-		KeyPathValues:             []any{k8sVersions[0], k8sVersions[1], k8sVersions[2]},
+	amiPermutation := permutation.Permutation{
+		KeyPath:                   []string{"awsMachineConfigs", "awsMachineConfig", "ami"},
+		KeyPathValues:             []any{config["awsMachineConfigs"].(map[string]any)["awsMachineConfig"].([]map[string]any)[0]["ami"]...},
 		KeyPathValueRelationships: []permutation.Relationship{},
 	}
 
-	permutedConfigs, permutationNames, err := permutation.Permute([]permutation.Permutation{testPermutation1}, config)
+	amiRelationship := permutation.Relationship {
+		ParentValue:       "aws",
+		ChildKeyPath:      []string{},
+		ChildKeyPathValue: "",
+		ChildPermutations: []permutation.Permutation{amiPermutation},
+	}
+
+	providerPermutation := permutation.Permutation{
+		KeyPath:                   []string{permutationdata.ClusterConfigKey, permutationdata.ProviderKey},
+		KeyPathValues:             []any{config[permutationdata.ClusterConfigKey].(map[string]any)[permutationdata.k8sVersionKey]...},
+		KeyPathValueRelationships: []permutation.Relationship{permutationsdata.LoadProviderRelationships(config)..., amiRelationship},
+	}
+
+	permutedConfigs, permutationNames, err := permutation.Permute([]permutation.Permutation{k8sPermutation, providerPermutation}, config)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -79,7 +94,7 @@ func (k *Sandbox) SetupSuite() {
 	logrus.Info("------STATS------")
 	logrus.Infof("Configs: %v", len(permutedConfigs))
 	logrus.Info("---------------------------------------------")
-
+/*
 	k.T().Run(name, func() {
 		clusterObjects := []v1.SteveAPIObject
 		for _, permutedConfig := range permutedConfigs {
@@ -104,7 +119,7 @@ func (k *Sandbox) SetupSuite() {
 		for _, clusterObject := range clusterObjects {
 			provisioning.VerifyCluster(s.T(), client, testClusterConfig, clusterObject)
 		}
-	})
+	})*/
 }
 
 func (k *Sandbox) TestSandbox() {
