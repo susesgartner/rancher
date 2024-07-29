@@ -17,20 +17,20 @@ const (
 )
 
 func LoadProviderRelationships(testConfig map[string]any) []permutation.Relationship {
-	providers := testConfig[ClusterConfigKey].(map[string]any)[ProviderKey].(*[]string)
+	providers := testConfig[ClusterConfigKey].(map[string]any)[ProviderKey].([]any)
 
 	var providerRelationships []permutation.Relationship
-	for _, provider := range *providers {
+	for _, provider := range providers {
 		switch {
 
 		case provider == AWSName:
 			providerRelationships = append(providerRelationships, LoadAWSRelationships(testConfig)...)
 
+		case provider == AzureName:
+			providerRelationships = append(providerRelationships, LoadAzureRelationships(testConfig)...)
+
 			//TODO ADD SUPPORT FOR OTHER PROVIDERS
 		/*
-			case provider == providerNames.AzureName:
-				providerRelationships = append(providerRelationships, LoadAWSRelationships(testConfig)...)
-
 			case provider == providerNames.VsphereName:
 				providerRelationships = append(providerRelationships, LoadAWSRelationships(testConfig)...)
 
