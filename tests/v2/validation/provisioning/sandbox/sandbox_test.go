@@ -70,7 +70,7 @@ func (k *Sandbox) SetupSuite() {
 	providerRelations = append(providerRelations, amiRelationship)
 	providerPermutation := permutation.Permutation{
 		KeyPath:                   []string{permutationdata.ClusterConfigKey, permutationdata.ProviderKey},
-		KeyPathValues:             config[permutationdata.ClusterConfigKey].(map[string]any)[permutationdata.K8sVersionKey].([]any),
+		KeyPathValues:             config[permutationdata.ClusterConfigKey].(map[string]any)[permutationdata.ProviderKey].([]any),
 		KeyPathValueRelationships: providerRelations,
 	}
 
