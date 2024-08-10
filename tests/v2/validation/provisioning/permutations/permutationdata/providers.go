@@ -17,10 +17,10 @@ const (
 )
 
 func LoadProviderRelationships(testConfig map[string]any) []permutation.Relationship {
-	providers := testConfig[ClusterConfigKey].(map[string]any)[ProviderKey].([]any)
+	providers, _ := permutation.GetKeyPathValue([]string{ClusterConfigKey, ProviderKey}, testConfig)
 
 	var providerRelationships []permutation.Relationship
-	for _, provider := range providers {
+	for _, provider := range providers.([]any) {
 		switch {
 
 		case provider == AWSName:

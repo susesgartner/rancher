@@ -13,6 +13,7 @@ import (
 	"github.com/rancher/shepherd/pkg/config"
 	"github.com/rancher/shepherd/pkg/session"
 	"github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -43,36 +44,26 @@ func (k *Sandbox) SetupSuite() {
 	//k.client = client
 
 	config := config.LoadConfigFromFile(os.Getenv(config.ConfigEnvironmentKey))
-	logrus.Info(config)
-	/*
-		k8sVersions, err := kubernetesversions.ListRKE2AllVersions(k.client)
-		require.NoError(k.T(), err)*/
-	k8sPermutation := permutation.Permutation{
-		KeyPath:                   []string{provisioningInputKey, k8sVersionKey},
-		KeyPathValues:             config[provisioningInputKey].(map[string]any)[k8sVersionKey].([]any),
-		KeyPathValueRelationships: []permutation.Relationship{},
-	}
 
-	amiPermutation := permutation.Permutation{
-		KeyPath:                   []string{"awsMachineConfigs", "awsMachineConfig", "ami"},
-		KeyPathValues:             config["awsMachineConfigs"].(map[string]any)["awsMachineConfig"].([]any)[0].(map[string]any)["ami"].([]any),
-		KeyPathValueRelationships: []permutation.Relationship{},
-	}
+	k8sKeyPath := []string{provisioningInputKey, k8sVersionKey}
+	k8sKeyValue, err := permutation.GetKeyPathValue(k8sKeyPath, config)
+	require.NoError(k.T(), err)
 
-	amiRelationship := permutation.Relationship{
-		ParentValue:       "aws",
-		ChildKeyPath:      []string{},
-		ChildKeyPathValue: "",
-		ChildPermutations: []permutation.Permutation{amiPermutation},
-	}
+	k8sPermutation := permutation.CreatePermutation(k8sKeyPath, k8sKeyValue.([]any), nil)
 
+	amiKeyPath := []string{"awsMachineConfigs", "awsMachineConfig", "ami"}
+	amiKeyValue, err := permutation.GetKeyPathValue(amiKeyPath, config)
+	require.NoError(k.T(), err)
+	amiPermutation := permutation.CreatePermutation(amiKeyPath, amiKeyValue.([]any), nil)
+
+	amiRelationship := permutation.CreateRelationship("aws", nil, nil, []permutation.Permutation{amiPermutation})
 	providerRelations := permutationdata.LoadProviderRelationships(config)
 	providerRelations = append(providerRelations, amiRelationship)
-	providerPermutation := permutation.Permutation{
-		KeyPath:                   []string{permutationdata.ClusterConfigKey, permutationdata.ProviderKey},
-		KeyPathValues:             config[permutationdata.ClusterConfigKey].(map[string]any)[permutationdata.ProviderKey].([]any),
-		KeyPathValueRelationships: providerRelations,
-	}
+
+	providerKeyPath := []string{permutationdata.ClusterConfigKey, permutationdata.ProviderKey}
+	providerKeyValue, err := permutation.GetKeyPathValue(providerKeyPath, config)
+	require.NoError(k.T(), err)
+	providerPermutation := permutation.CreatePermutation(providerKeyPath, providerKeyValue.([]any), providerRelations)
 
 	permutedConfigs, _, err := permutation.Permute([]permutation.Permutation{k8sPermutation, providerPermutation}, config)
 	if err != nil {

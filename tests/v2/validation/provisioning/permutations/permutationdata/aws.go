@@ -11,11 +11,13 @@ const (
 )
 
 func LoadAWSRelationships(testConfig map[string]any) []permutation.Relationship {
-	credentialsConfig := testConfig[awsCredentialsConfigKey]
-	credentials := permutation.CreateRelationship(AWSName, []string{awsCredentialsConfigKey}, credentialsConfig, nil)
+	credentialsKeyPath := []string{awsCredentialsConfigKey}
+	credentialsValue, _ := permutation.GetKeyPathValue(credentialsKeyPath, testConfig)
+	credentials := permutation.CreateRelationship(AWSName, credentialsKeyPath, credentialsValue, nil)
 
-	machineConfigsConfig := testConfig[awsMachineConfigsKey]
-	machineConfigs := permutation.CreateRelationship(AWSName, []string{awsMachineConfigsKey}, machineConfigsConfig, nil)
+	machineConfigsKeyPath := []string{awsMachineConfigsKey}
+	machineConfigsValue, _ := permutation.GetKeyPathValue(machineConfigsKeyPath, testConfig)
+	machineConfigs := permutation.CreateRelationship(AWSName, machineConfigsKeyPath, machineConfigsValue, nil)
 
 	nodeProvider := permutation.CreateRelationship(AWSName, []string{ClusterConfigKey, NodeProvidersKey}, awsNodeProvider, nil)
 
