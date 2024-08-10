@@ -54,15 +54,17 @@ func (k *Sandbox) SetupSuite() {
 	amiKeyPath := []string{"awsMachineConfigs", "awsMachineConfig", "ami"}
 	amiKeyValue, err := permutation.GetKeyPathValue(amiKeyPath, config)
 	require.NoError(k.T(), err)
+
 	amiPermutation := permutation.CreatePermutation(amiKeyPath, amiKeyValue.([]any), nil)
 
 	amiRelationship := permutation.CreateRelationship("aws", nil, nil, []permutation.Permutation{amiPermutation})
-	providerRelations := permutationdata.LoadProviderRelationships(config)
+	providerRelations := permutationdata.LoadProviderRelationships(&k.Suite, config)
 	providerRelations = append(providerRelations, amiRelationship)
 
 	providerKeyPath := []string{permutationdata.ClusterConfigKey, permutationdata.ProviderKey}
 	providerKeyValue, err := permutation.GetKeyPathValue(providerKeyPath, config)
 	require.NoError(k.T(), err)
+
 	providerPermutation := permutation.CreatePermutation(providerKeyPath, providerKeyValue.([]any), providerRelations)
 
 	permutedConfigs, _, err := permutation.Permute([]permutation.Permutation{k8sPermutation, providerPermutation}, config)

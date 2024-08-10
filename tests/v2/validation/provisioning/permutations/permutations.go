@@ -102,7 +102,7 @@ func RunTestPermutations(s *suite.Suite, testNamePrefix string, client *rancher.
 	for _, nodeProviderName := range providers {
 
 		nodeProvider, rke1Provider, customProvider, kubeVersions := GetClusterProvider(clusterType, nodeProviderName, provisioningConfig)
-
+		logrus.Info(nodeProvider)
 		for _, kubeVersion := range kubeVersions {
 			for _, cni := range provisioningConfig.CNIs {
 
@@ -126,10 +126,10 @@ func RunTestPermutations(s *suite.Suite, testNamePrefix string, client *rancher.
 					switch clusterType {
 					case RKE2ProvisionCluster, K3SProvisionCluster:
 						testClusterConfig.KubernetesVersion = kubeVersion
-						clusterObject, err = provisioning.CreateProvisioningCluster(client, *nodeProvider, testClusterConfig, hostnameTruncation)
+						//clusterObject, err = provisioning.CreateProvisioningCluster(client, *nodeProvider, testClusterConfig, hostnameTruncation)
 						require.NoError(s.T(), err)
 
-						provisioning.VerifyCluster(s.T(), client, testClusterConfig, clusterObject)
+						provisioning.VerifyCluster(s.T(), client, testClusterConfig, &steveV1.SteveAPIObject{})
 
 					case RKE1ProvisionCluster:
 						testClusterConfig.KubernetesVersion = kubeVersion

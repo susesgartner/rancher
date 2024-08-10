@@ -2,6 +2,8 @@ package permutationdata
 
 import (
 	"github.com/rancher/shepherd/extensions/permutation"
+	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/suite"
 )
 
 const (
@@ -10,13 +12,17 @@ const (
 	awsCredentialsConfigKey = "awsCredentials"
 )
 
-func LoadAWSRelationships(testConfig map[string]any) []permutation.Relationship {
+func LoadAWSRelationships(s *suite.Suite, testConfig map[string]any) []permutation.Relationship {
 	credentialsKeyPath := []string{awsCredentialsConfigKey}
-	credentialsValue, _ := permutation.GetKeyPathValue(credentialsKeyPath, testConfig)
+	credentialsValue, err := permutation.GetKeyPathValue(credentialsKeyPath, testConfig)
+	require.NoError(s.T(), err)
+
 	credentials := permutation.CreateRelationship(AWSName, credentialsKeyPath, credentialsValue, nil)
 
 	machineConfigsKeyPath := []string{awsMachineConfigsKey}
-	machineConfigsValue, _ := permutation.GetKeyPathValue(machineConfigsKeyPath, testConfig)
+	machineConfigsValue, err := permutation.GetKeyPathValue(machineConfigsKeyPath, testConfig)
+	require.NoError(s.T(), err)
+
 	machineConfigs := permutation.CreateRelationship(AWSName, machineConfigsKeyPath, machineConfigsValue, nil)
 
 	nodeProvider := permutation.CreateRelationship(AWSName, []string{ClusterConfigKey, NodeProvidersKey}, awsNodeProvider, nil)
