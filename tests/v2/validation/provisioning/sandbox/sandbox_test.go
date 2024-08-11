@@ -8,9 +8,12 @@ import (
 
 	"github.com/rancher/rancher/tests/v2/validation/provisioning/permutations/permutationdata"
 	"github.com/rancher/shepherd/clients/rancher"
+	v1 "github.com/rancher/shepherd/clients/rancher/v1"
 	"github.com/rancher/shepherd/extensions/clusters"
 	"github.com/rancher/shepherd/extensions/permutation"
+	"github.com/rancher/shepherd/extensions/provisioning"
 	"github.com/rancher/shepherd/pkg/config"
+	namegen "github.com/rancher/shepherd/pkg/namegenerator"
 	"github.com/rancher/shepherd/pkg/session"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
@@ -21,6 +24,7 @@ const (
 	provisioningInputKey = "clusterConfig"
 	k8sVersionKey        = "kubernetesVersion"
 	awsMachineKey        = "awsMachineConfigs"
+	namespace            = "fleet-default"
 )
 
 type Sandbox struct {
@@ -82,33 +86,30 @@ func (k *Sandbox) SetupSuite() {
 	logrus.Info("------STATS------")
 	logrus.Infof("Configs: %v", len(permutedConfigs))
 	logrus.Info("---------------------------------------------")
-	/*
-		k.T().Run(name, func() {
-			clusterObjects := []v1.SteveAPIObject
-			for _, permutedConfig := range permutedConfigs {
-				k.provisioningConfig = new(clusters.ClusterConfig)
-				config.LoadObjectFromMap(provisioningInputKey, permutedConfig, k.provisioningConfig)
+	k.Run("test", func() {
+		var clusterObjects []*v1.SteveAPIObject
+		for _, permutedConfig := range permutedConfigs {
+			k.provisioningConfig = new(clusters.ClusterConfig)
+			config.LoadObjectFromMap(provisioningInputKey, permutedConfig, k.provisioningConfig)
 
-				logrus.Info("Provisioning Clusters")
-				providers := *k.provisioningConfig.Providers
-				provider := provider[0]
-				nodeProvider := provisioning.CreateProvider(provider)
+			logrus.Info("Provisioning Clusters")
+			providers := *k.provisioningConfig.Providers
+			nodeProvider := provisioning.CreateProvider(providers[0])
 
-				clusterName := namegen.AppendRandomString(nodeProvider.Name.String())
-				generatedPoolName := fmt.Sprintf("nc-%s-pool1-", clusterName)
-				machinePoolConfigs := nodeProvider.MachinePoolFunc(permutedConfig, generatedPoolName, namespace)
+			clusterName := namegen.AppendRandomString(nodeProvider.Name.String())
+			generatedPoolName := fmt.Sprintf("nc-%s-pool1-", clusterName)
+			machinePoolConfigs := nodeProvider.MachinePoolFunc(permutedConfig, generatedPoolName, namespace)
 
-				clusterObject, err := provisioning.CreateProvisioningCluster(k.client, nodeProvider, k.provisioningConfig, machinePoolConfigs, clusterName, nil)
-				require.NoError(s.T(), err)
+			clusterObject, err := provisioning.CreateProvisioningCluster(k.client, nodeProvider, k.provisioningConfig, machinePoolConfigs, clusterName, nil)
+			require.NoError(k.T(), err)
 
-				clusterObjects = append(clusterObjects, clusterObject)
-			}
+			clusterObjects = append(clusterObjects, clusterObject)
+		}
 
-			for _, clusterObject := range clusterObjects {
-				provisioning.VerifyCluster(s.T(), client, testClusterConfig, clusterObject)
-			}
-		})
-	*/
+		for _, clusterObject := range clusterObjects {
+			provisioning.VerifyCluster(k.T(), k.client, testClusterConfig, clusterObject)
+		}
+	})
 }
 
 func (k *Sandbox) TestSandbox() {
