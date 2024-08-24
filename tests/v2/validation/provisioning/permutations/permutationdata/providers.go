@@ -1,12 +1,5 @@
 package permutationdata
 
-import (
-	"fmt"
-
-	"github.com/rancher/shepherd/extensions/permutation"
-	"github.com/stretchr/testify/suite"
-)
-
 const (
 	AWSName       = "aws"
 	AzureName     = "azure"
@@ -17,6 +10,7 @@ const (
 	VsphereName   = "vsphere"
 )
 
+/*
 func LoadProviderRelationships(s *suite.Suite, testConfig map[string]any) []permutation.Relationship {
 	providers, _ := permutation.GetKeyPathValue([]string{ClusterConfigKey, ProviderKey}, testConfig)
 
@@ -31,7 +25,7 @@ func LoadProviderRelationships(s *suite.Suite, testConfig map[string]any) []perm
 			providerRelationships = append(providerRelationships, LoadAzureRelationships(s, testConfig)...)
 
 			//TODO ADD SUPPORT FOR OTHER PROVIDERS
-		/*
+
 			case provider == providerNames.VsphereName:
 				providerRelationships = append(providerRelationships, LoadAWSRelationships(testConfig)...)
 
@@ -45,7 +39,7 @@ func LoadProviderRelationships(s *suite.Suite, testConfig map[string]any) []perm
 				providerRelationships = append(providerRelationships, LoadAWSRelationships(testConfig)...)
 
 			case provider == providerNames.GoogleName:
-				providerRelationships = append(providerRelationships, LoadAWSRelationships(testConfig)...) */
+				providerRelationships = append(providerRelationships, LoadAWSRelationships(testConfig)...)
 
 		default:
 			panic(fmt.Sprintf("Provider:%v not found", provider))
@@ -55,3 +49,4 @@ func LoadProviderRelationships(s *suite.Suite, testConfig map[string]any) []perm
 
 	return providerRelationships
 }
+*/
