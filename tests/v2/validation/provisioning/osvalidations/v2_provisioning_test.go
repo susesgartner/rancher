@@ -60,7 +60,7 @@ func (k *V2Provisioning) SetupSuite() {
 	require.NoError(k.T(), err)
 	providerPermutation.KeyPathValueRelationships = append(providerPermutation.KeyPathValueRelationships, amiRelationship)
 
-	permutedConfigs, _, err := permutations.Permute([]permutations.Permutation{k8sPermutation, providerPermutation}, cattleConfig)
+	permutedConfigs, err := permutations.Permute([]permutations.Permutation{k8sPermutation, providerPermutation}, cattleConfig)
 	require.NoError(k.T(), err)
 
 	k.permutedConfigs = append(k.permutedConfigs, permutedConfigs...)

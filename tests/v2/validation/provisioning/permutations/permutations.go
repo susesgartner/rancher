@@ -28,6 +28,7 @@ import (
 	management "github.com/rancher/shepherd/clients/rancher/generated/management/v3"
 	steveV1 "github.com/rancher/shepherd/clients/rancher/v1"
 	extensionscharts "github.com/rancher/shepherd/extensions/charts"
+	"github.com/rancher/shepherd/extensions/cloudcredentials"
 	extensionscluster "github.com/rancher/shepherd/extensions/clusters"
 	wloads "github.com/rancher/shepherd/extensions/workloads"
 	"github.com/rancher/shepherd/extensions/workloads/pods"
@@ -110,6 +111,7 @@ func RunTestPermutations(s *suite.Suite, testNamePrefix string, client *rancher.
 		for _, kubeVersion := range kubeVersions {
 			for _, cni := range provisioningConfig.CNIs {
 
+				credentialSpec := cloudcredentials.LoadCloudCredential(string(nodeProvider.Name))
 				testClusterConfig = clusters.ConvertConfigToClusterConfig(provisioningConfig)
 				testClusterConfig.CNI = cni
 				name = testNamePrefix + " Node Provider: " + nodeProviderName + " Kubernetes version: " + kubeVersion + " cni: " + cni
@@ -129,8 +131,10 @@ func RunTestPermutations(s *suite.Suite, testNamePrefix string, client *rancher.
 
 					switch clusterType {
 					case RKE2ProvisionCluster, K3SProvisionCluster:
+						machineConfigSpec := machinepools.LoadMachineConfigs(string(nodeProvider.Name))
+
 						testClusterConfig.KubernetesVersion = kubeVersion
-						clusterObject, err = provisioning.CreateProvisioningCluster(client, *nodeProvider, testClusterConfig, hostnameTruncation)
+						clusterObject, err = provisioning.CreateProvisioningCluster(client, *nodeProvider, credentialSpec, testClusterConfig, machineConfigSpec, hostnameTruncation)
 						reports.TimeoutClusterReport(clusterObject, err)
 						require.NoError(s.T(), err)
 
