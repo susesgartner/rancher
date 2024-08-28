@@ -67,6 +67,33 @@ func (r *RKE2NodeDriverProvisioningTestSuite) SetupSuite() {
 	require.NoError(r.T(), err)
 
 	r.standardUserClient = standardUserClient
+
+	//*************************************************************
+	cattleConfig := config.LoadConfigFromFile(os.Getenv(config.ConfigEnvironmentKey))
+
+	k8sPermutation, err := permutationdata.CreateK8sPermutation(cattleConfig)
+	require.NoError(k.T(), err)
+
+	cniRelationship, err := permutationdata.CreateCNIPermutation(cattleConfig)
+	require.NoError(k.T(), err)
+
+	providerPermutation, err := permutationdata.CreateProviderPermutation(cattleConfig)
+	require.NoError(k.T(), err)
+
+	permutedConfigs, _, err := permutations.Permute([]permutations.Permutation{k8sPermutation, providerPermutation, cniPermutation}, cattleConfig)
+	require.NoError(k.T(), err)
+
+	r.permutedConfigs = append(r.permutedConfigs, permutedConfigs...)
+	for _, permutedConfig := range permutedConfigs {
+		logrus.Info("---------------------------------------------")
+		indented, _ := json.MarshalIndent(permutedConfig, "", "    ")
+		converted := string(indented)
+		fmt.Println(converted)
+	}
+
+	logrus.Info("------STATS------")
+	logrus.Infof("Configs: %v", len(permutedConfigs))
+	logrus.Info("---------------------------------------------")
 }
 
 func (r *RKE2NodeDriverProvisioningTestSuite) TestProvisioningRKE2Cluster() {
