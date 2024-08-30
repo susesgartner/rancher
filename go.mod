@@ -436,4 +436,4 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 )
 
-replace github.com/rancher/shepherd => github.com/susesgartner/shepherd v0.0.0-20240826185837-003baa5dd77f
+replace github.com/rancher/shepherd => /Users/sgartner/go/src/github.com/susesgartner/shepherd
