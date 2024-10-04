@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="11" failures="0" errors="0" time="419.013330">
+	<testsuite tests="11" failures="0" time="411.999000" name="github.com/rancher/rancher/tests/v2/validation/workloads" timestamp="2024-10-19T00:00:07-05:00">
+		<properties>
+			<property name="go.version" value="go1.23.0 darwin/arm64"></property>
+		</properties>
+		<testcase classname="github.com/rancher/rancher/tests/v2/validation/workloads" name="TestWorkloadTestSuite/TestDemoSubTestCase/WorkloadDeploymentTest" time="6.130000"></testcase>
+		<testcase classname="github.com/rancher/rancher/tests/v2/validation/workloads" name="TestWorkloadTestSuite/TestDemoSubTestCase/WorkloadSideKickTest" time="18.110000"></testcase>
+		<testcase classname="github.com/rancher/rancher/tests/v2/validation/workloads" name="TestWorkloadTestSuite/TestDemoSubTestCase/WorkloadDaemonSetTest" time="11.730000"></testcase>
+		<testcase classname="github.com/rancher/rancher/tests/v2/validation/workloads" name="TestWorkloadTestSuite/TestDemoSubTestCase/WorkloadCronjobTest" time="63.260000"></testcase>
+		<testcase classname="github.com/rancher/rancher/tests/v2/validation/workloads" name="TestWorkloadTestSuite/TestDemoSubTestCase/WorkloadStatefulsetTest" time="11.700000"></testcase>
+		<testcase classname="github.com/rancher/rancher/tests/v2/validation/workloads" name="TestWorkloadTestSuite/TestDemoSubTestCase/WorkloadUpgradeTest" time="100.700000"></testcase>
+		<testcase classname="github.com/rancher/rancher/tests/v2/validation/workloads" name="TestWorkloadTestSuite/TestDemoSubTestCase/WorkloadPodScaleUpTest" time="26.000000"></testcase>
+		<testcase classname="github.com/rancher/rancher/tests/v2/validation/workloads" name="TestWorkloadTestSuite/TestDemoSubTestCase/WorkloadPodScaleDownTest" time="26.170000"></testcase>
+		<testcase classname="github.com/rancher/rancher/tests/v2/validation/workloads" name="TestWorkloadTestSuite/TestDemoSubTestCase/WorkloadPauseOrchestrationTest" time="47.200000"></testcase>
+		<testcase classname="github.com/rancher/rancher/tests/v2/validation/workloads" name="TestWorkloadTestSuite/TestDemoSubTestCase" time="311.010000"></testcase>
+		<testcase classname="github.com/rancher/rancher/tests/v2/validation/workloads" name="TestWorkloadTestSuite" time="410.870000"></testcase>
+	</testsuite>
+</testsuites>
