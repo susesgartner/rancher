@@ -15,7 +15,9 @@ type ClusterConfig struct {
 	MachinePools                   []provisioningInput.MachinePools                  `json:"machinepools" yaml:"machinepools"`
 	CloudProvider                  string                                            `json:"cloudProvider" yaml:"cloudProvider"`
 	Providers                      *[]string                                         `json:"providers" yaml:"providers"`
+	Provider                       string                                            `json:"provider" yaml:"provider"`
 	NodeProviders                  *[]string                                         `json:"nodeProviders" yaml:"nodeProviders"`
+	NodeProvider                   string                                            `json:"nodeProvider" yaml:"nodeProvider"`
 	Hardened                       bool                                              `json:"hardened" yaml:"hardened"`
 	AddOnConfig                    *provisioningInput.AddOnConfig                    `json:"addonConfig" yaml:"addonConfig"`
 	AgentEnvVars                   []rkev1.EnvVar                                    `json:"agentEnvVars" yaml:"agentEnvVars"`
@@ -45,7 +47,9 @@ func ConvertConfigToClusterConfig(provisioningConfig *provisioningInput.Config) 
 	newConfig.Networking = provisioningConfig.Networking
 	newConfig.Advanced = provisioningConfig.Advanced
 	newConfig.Providers = &provisioningConfig.Providers
+	newConfig.Provider = provisioningConfig.Providers[0]
 	newConfig.NodeProviders = &provisioningConfig.NodeProviders
+	newConfig.NodeProvider = provisioningConfig.NodeProviders[0]
 	newConfig.ClusterAgent = provisioningConfig.ClusterAgent
 	newConfig.FleetAgent = provisioningConfig.FleetAgent
 	newConfig.ETCD = provisioningConfig.ETCD
