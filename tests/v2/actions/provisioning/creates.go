@@ -319,11 +319,17 @@ func CreateProvisioningCustomCluster(client *rancher.Client, externalNodeProvide
 			command = createRegistrationCommand(command, node.PublicIPAddress, node.PrivateIPAddress, clustersConfig.MachinePools[poolIndex])
 			logrus.Infof("Command: %s", command)
 
-			output, err := node.ExecuteCommand(command)
-			if err != nil {
-				return nil, err
+			retries := 5
+			for i := 0; i < retries; i++ {
+				output, err := node.ExecuteCommand(command)
+				logrus.Info(output)
+				if err != nil {
+					logrus.Info(err)
+					logrus.Infof("Retry %v/%v", i+1, retries)
+					continue
+				}
+				break
 			}
-			logrus.Infof(output)
 		}
 		totalNodesObserved += int(quantityPerPool[poolIndex])
 	}

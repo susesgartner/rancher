@@ -10,7 +10,6 @@ import (
 	"github.com/rancher/rancher/tests/v2/actions/projects"
 	"github.com/rancher/rancher/tests/v2/actions/provisioning"
 	"github.com/rancher/rancher/tests/v2/actions/provisioninginput"
-	"github.com/rancher/rancher/tests/v2/actions/reports"
 	cis "github.com/rancher/rancher/tests/v2/validation/provisioning/resources/cisbenchmark"
 	"github.com/rancher/shepherd/clients/rancher"
 	"github.com/rancher/shepherd/clients/rancher/catalog"
@@ -106,20 +105,17 @@ func (c *HardenedRKE2ClusterProvisioningTestSuite) TestProvisioningRKE2HardenedC
 			testConfig.KubernetesVersion = c.provisioningConfig.RKE2KubernetesVersions[0]
 
 			clusterObject, err := provisioning.CreateProvisioningCustomCluster(tt.client, &externalNodeProvider, testConfig)
-			reports.TimeoutClusterReport(clusterObject, err)
 			require.NoError(c.T(), err)
 
 			provisioning.VerifyCluster(c.T(), tt.client, testConfig, clusterObject)
 
 			cluster, err := extensionscluster.NewClusterMeta(tt.client, clusterObject.Name)
-			reports.TimeoutClusterReport(clusterObject, err)
 			require.NoError(c.T(), err)
 
 			latestCISBenchmarkVersion, err := tt.client.Catalog.GetLatestChartVersion(charts.CISBenchmarkName, catalog.RancherChartRepo)
 			require.NoError(c.T(), err)
 
 			project, err := projects.GetProjectByName(tt.client, cluster.ID, cis.System)
-			reports.TimeoutClusterReport(clusterObject, err)
 			require.NoError(c.T(), err)
 
 			c.project = project
